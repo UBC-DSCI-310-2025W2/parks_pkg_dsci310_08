@@ -13,27 +13,34 @@ invalid_characters = r'[<>:"\|*?]'
 def create_directory(path: str):
     """
     Creates the directory given by the specified path.
-    Purpose: If the directory where the user wants to store their data/file does not exist, this function will create it for them.
 
-    Returns an error if the specified directory name is empty.
-    Returns an error if the specified directory name is illegal.
+    Purpose: If the directory where the user wants to store their data/file 
+    does not exist, this function will create it for them.
 
-    Parameters:
+    Parameters
     ----------
-    path: str
+    path : str
         A string representation of the desired path to be created. 
-    
-    Returns:
-    --------
+
+    Returns
+    -------
     pathlib.Path
         A path object to the newly created directory.
-        
-    Examples:
+
+    Raises
+    ------
+    TypeError
+        If path is not a string.
+    ValueError
+        If the specified directory name is empty or contains illegal characters.
+
+    Examples
     --------
     >>> from pathlib import Path
     >>> folder_path = "data/processed/predictions"
     >>> created_path = create_directory(folder_path)
     """
+    
     # validating arguments passed in
     if not isinstance(path, str):
         raise TypeError("path must be a string")
@@ -50,50 +57,41 @@ def create_directory(path: str):
 
 def find_measurement_last_time(data_frame: pd.DataFrame, time_col: str, group_col: str, measurement_col: str):
     """
-    Finds the previous time period's measurement for a given group and adds it as a new column
-    called `{measurement_col}_last_time` in the data frame.
+    Finds the previous time period's measurement for a given group.
     
+    Adds it as a new column called `{measurement_col}_last_time` in the data frame.
     This function sorts the data by the group variable and time (i.e., year), 
-    then shifts the specified measurement column by one period within each group 
-    to find the previous measurement value. It fills any missing values 
-    (usually the first period of a group) with the current period's measurement.
-    
-    We explicitly request that the measurement column does not have any missing data
-    as it is the target variable. If there are any missing values in the measurement
-    column, the function will raise a ValueError.
+    then shifts the specified measurement column by one period within each group.
 
-    Parameters:
+    Parameters
     ----------
     data_frame : pandas.DataFrame
         The input DataFrame containing the data to analyze.
     time_col : str
-        The name of the column representing the time (i.e., 'year') for sorting
+        The name of the column representing the time (i.e., 'year') for sorting.
     group_col : str
-        The name of the group column (i.e., 'city')
+        The name of the group column (i.e., 'city').
     measurement_col : str
-        The name of the column containing the measurement value (i.e., `rank`) 
-        (should not have NAs).
+        The name of the column containing the measurement value (i.e., 'rank').
 
-    Returns:
+    Returns
     -------
     pandas.DataFrame
-        A DataFrame with one more column that the original DataFrame:
-        The returned DataFrame should have this additional column:
-        - '{measurement_col}_last_time': 
-            the previous time period's measurement for a given group
-        
-    Examples:
+        A DataFrame with the additional column:
+        - '{measurement_col}_last_time': the previous time period's measurement.
+
+    Raises
+    ------
+    ValueError
+        If the measurement column contains missing values (NAs).
+
+    Examples
     --------
     >>> import pandas as pd
     >>> data_raw = pd.read_csv('example_data.csv') 
     >>> data_processed = find_measurement_last_time(data_raw, 'year', 'city', 'rank')
-    >>> print(data_processed)
-
-    Notes:
-    -----
-    This function uses the pandas library to perform the task.
-
     """
+    
     if data_frame[measurement_col].isna().any():
         raise ValueError("The measurement column should not have any missing values.")
     
@@ -113,40 +111,36 @@ def find_measurement_last_time(data_frame: pd.DataFrame, time_col: str, group_co
 
 def get_model_coefficients(fitted_pipe: Pipeline) -> pd.DataFrame:
     """
-    Extracts feature coefficients from a fitted Ridge regression pipeline and returns
-    a DataFrame with clean feature names and coefficients in descending order.
+    Extracts feature coefficients from a fitted Ridge regression pipeline.
     
-    The model pipeline must have two steps – ColumnTransformer and the Ridge model.
-    The ColumnTransformer is expected to use OneHotEncoder for categorical features and
-    'passthrough' for numerical features, as the function strips the 'onehotencoder__' and
-    'passthrough__' prefixes from feature names.
-    
-    Returns a TypeError if the parameter passed is not a sklearn Pipeline instance.
-    Returns a ValueError if the pipeline does not contain 'columntransformer' and/or 'ridge' steps.
-    
+    Returns a DataFrame with clean feature names and coefficients in 
+    descending order. The model pipeline must have two steps: 
+    ColumnTransformer and the Ridge model.
+
     Parameters
     ----------
     fitted_pipe : sklearn.pipeline.Pipeline
-        A fitted pipeline containing a 'columntransformer' step followed by a 'ridge' step.
-    
+        A fitted pipeline with a 'columntransformer' and a 'ridge' step.
+
     Returns
     -------
     pd.DataFrame
-        A DataFrame with columns 'feature' and 'coefficient', sorted by absolute
-        coefficient value in descending order, with transformer prefixes removed
-        from feature names.
-    
+        A DataFrame with columns 'feature' and 'coefficient', sorted by 
+        absolute coefficient value in descending order.
+
+    Raises
+    ------
+    TypeError
+        If the parameter passed is not a sklearn Pipeline instance.
+    ValueError
+        If the pipeline is missing 'columntransformer' or 'ridge' steps.
+
     Examples
     --------
     >>> # Given a fitted sklearn Pipeline with a ColumnTransformer and Ridge step
     >>> coef_df = get_model_coefficients(final_pipe)
-    >>> coef_df.head()
-    
-    Notes:
-    --------
-    This function uses the pandas and sklearn libraries to perform the task
-    
     """
+    
     # validating arguments passed in
     if not isinstance(fitted_pipe, Pipeline):
         raise TypeError("fitted_pipe must be a fitted sklearn Pipeline instance.")
@@ -179,8 +173,8 @@ def split_dataset(data_frame, target_col, test_size=0.2, random_state=None):
     """
     Split a pandas DataFrame into train and test sets by target column.
 
-    Separates the input DataFrame into features (X) and target (y), then splits each 
-    into training and test sets using sklearn's train_test_split.
+    Separates the input DataFrame into features (X) and target (y), then 
+    splits each into training and test sets using sklearn's train_test_split.
 
     Parameters
     ----------
@@ -189,37 +183,32 @@ def split_dataset(data_frame, target_col, test_size=0.2, random_state=None):
     target_col : str
         The name of the column in data_frame to use as the target (y).
     test_size : float, optional
-        Proportion of the dataset to include in the test split.
-        Must be between 0 and 1 (exclusive). Default is 0.2.
-    random_state : int or None, optional
+        Proportion of the dataset to include in the test split (0 to 1). 
+        Default is 0.2.
+    random_state : int, optional
         Controls the shuffling for reproducible output. Default is None.
 
     Returns
     -------
     tuple of pandas.DataFrame
-        A tuple (X_train, X_test, y_train, y_test) where:
-        - X_train : training features DataFrame
-        - X_test  : test features DataFrame
-        - y_train : training target Series (as DataFrame with one column)
-        - y_test  : test target Series (as DataFrame with one column)
+        A tuple (X_train, X_test, y_train, y_test) containing the split data.
 
     Raises
     ------
     TypeError
         If data_frame is not a pandas DataFrame.
     ValueError
-        If target_col is not a column in data_frame.
-    ValueError
-        If test_size is not strictly between 0 and 1.
-        
+        If target_col is missing or test_size is out of bounds.
+
     Examples
     --------
     >>> import pandas as pd
-    >>> data_processed = pd.read_csv(data_path)
+    >>> data_processed = pd.read_csv('data.csv')
     >>> X_train, X_test, y_train, y_test = split_dataset(
-        data_processed, target_col="rank", test_size=0.2, random_state=73
-        )
+    ...     data_processed, target_col="rank", test_size=0.2, random_state=73
+    ... )
     """
+    
     if not isinstance(data_frame, pd.DataFrame):
         raise TypeError("data_frame must be a pandas DataFrame.")
 

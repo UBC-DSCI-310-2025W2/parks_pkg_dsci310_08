@@ -2,8 +2,8 @@
 **DSCI 310 Group 08**\
 **Authors**: Shivani Aggarwal, Luna Gulec, Jingyuan Liu, Sarenna Ulman
 
-[![Run Tests](https://github.com/ljy0401/parks_pkg_dsci310_08/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/ljy0401/parks_pkg_dsci310_08/actions)
-[![Documentation Status](https://github.com/ljy0401/parks_pkg_dsci310_08/actions/workflows/docs.yml/badge.svg?branch=main)](https://github.com/ljy0401/parks_pkg_dsci310_08/actions)
+[![Run Tests](https://github.com/ljy0401/parks_pkg_dsci310_08/actions/workflows/test.yml/badge.svg)](https://github.com/ljy0401/parks_pkg_dsci310_08/actions/workflows/test.yml)
+[![Documentation Status](https://github.com/ljy0401/parks_pkg_dsci310_08/actions/workflows/docs.yml/badge.svg)](https://github.com/ljy0401/parks_pkg_dsci310_08/actions/workflows/docs.yml)
 
 **`parks_pkg_dsci310_08` is a Python package that contains several utility functions for managing local file directories, data pre-processing, and model coefficient extraction, specifically for [U.S. Parks Access Ranking](https://github.com/rfordatascience/tidytuesday/blob/main/data/2021/2021-06-22/readme.md) analysis, for example, in [this project](https://github.com/UBC-DSCI-310-2025W2/dsci-310-group-08) we wrote.**
 

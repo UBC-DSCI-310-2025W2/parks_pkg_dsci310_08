@@ -8,7 +8,7 @@ import pandas as pd
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split
 
-invalid_characters = r'[<>:"\|*?]'
+invalid_characters = r'[<>"\|*?]'
 
 def create_directory(path: str):
     """

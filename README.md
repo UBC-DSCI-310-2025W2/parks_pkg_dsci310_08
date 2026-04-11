@@ -23,30 +23,39 @@ $ pip install -i https://test.pypi.org/simple/ parks_pkg_dsci310_08
 or directly from GitHub using:
 
 ```bash
-$ pip install git+https://github.com/ljy0401/parks_pkg_dsci310_08.git
+$ pip install git+https://github.com/UBC-DSCI-310-2025W2/parks_pkg_dsci310_08.git
 ```
 
-To use parks_pkg_dsci310_08 in your code:
+To use `parks_pkg_dsci310_08` in your code:
 
 ```python
 >>> from parks_pkg_dsci310_08.parks import create_directory, find_measurement_last_time, get_model_coefficients, split_dataset
 >>> import pandas as pd
 
->>> folder_path = "data/processed/predictions"
->>> created_path = create_directory(folder_path)
+>>> # Create output directories
+>>> processed_path = "data/processed"
+>>> prediction_path = "data/processed/predictions"
+>>> created_processed_path = create_directory(processed_path)
+>>> created_prediction_path = create_directory(prediction_path)
 
+>>> # Load raw data
 >>> data_raw = pd.read_csv('example_data.csv') 
 >>> data_processed = find_measurement_last_time(data_raw, 'year', 'city', 'rank')
 >>> print(data_processed)
+>>> data_path = f"{created_processed_path}/data_processed.csv"
+>>> data_processed.to_csv(data_path, index=False)
 
->>> # Given a fitted sklearn Pipeline with a ColumnTransformer and Ridge step
->>> coef_df = get_model_coefficients(final_pipe)
->>> coef_df.head()
-
+>>> # Split processed data
 >>> data_processed = pd.read_csv(data_path)
 >>> X_train, X_test, y_train, y_test = split_dataset(
-    data_processed, target_col="rank", test_size=0.2, random_state=73
+        data_processed, target_col="rank", test_size=0.2, random_state=73
     )
+
+>>> # Given a fitted sklearn Pipeline with a ColumnTransformer and Ridge step
+>>> coef_df = get_model_coefficients(pipe)
+>>> coef_df.head()
+>>> coef_path = f"{created_prediction_path}/model_coef.csv"
+>>> coef_df.to_csv(coef_path, index=False)
 ```
 
 ## Copyright
